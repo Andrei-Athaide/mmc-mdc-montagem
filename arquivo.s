@@ -8,24 +8,74 @@ _start:
 
 
 main:
+    addi sp, sp, -4
+    sw ra, 0(sp)
+    
     jal read
 
-    li     
+    lb t0, 0(a1)
+    lb t1, 1(a1)
+    lb t2, 3(a1)
+    lb t3, 4(a1)
 
-    # Roda até b = 0 e a = b, a é MDC
+    li t4, 48
+    sub t0, t0, t4 
+    sub t1, t1, t4
+    sub t2, t2, t4
+    sub t3, t3, t4 
+
+    li t5, 10
+    mul t0, t0, t5
+    add t0, t0, t1
+    mul t2, t2, t5
+    add t2, t2, t3
+
+    mv a0, t0
+    mv a1, t2 
+
     1: 
-    beqz a1, 1f
-    rem t0, a0, a1 
-    mv a0, a1
-    mv a1, t0
-    bnez a1, 1b
+    beqz t2, 1f
+    rem t6, t0, t2 
+    mv t0, t2
+    mv t2, t6
+    bnez t2, 1b
 
     1:
-    mv a1, a2
-    mul t0, a0, a1
-    div a3, t0, a0
+    mul t6, a0, a1 
+    div a3, t6, t0
+
+    la t0, result
+    li t1, 1000
+    li t4, 10
+    
+    li t1, 1000
+    div t2, a3, t1
+    mul t3, t2, t1
+    sub a3, a3, t3
+    addi t2, t2, 48 
+    sb t2, 0(t0)
+    li t1, 100
+    div t2, a3, t1
+    mul t3, t2, t1
+    sub a3, a3, t3
+    addi t2, t2, 48
+    sb t2, 1(t0)
+    li t1, 10
+    div t2, a3, t1
+    mul t3, t2, t1
+    sub a3, a3, t3
+    addi t2, t2, 48
+    sb t2, 2(t0)
+    addi a3, a3, 48
+    sb a3, 3(t0)
+    li t1, '\n'
+    sb t1, 4(t0)
+
+    jal write
+
+    lw ra, 0(sp)
+    addi sp, sp, 4
     ret
-    # Transforma a4 no MMC
 
 read:
     li a0, 0            # file descriptor = 0 (stdin)
